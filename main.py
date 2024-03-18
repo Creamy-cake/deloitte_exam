@@ -53,6 +53,8 @@ def ocr_1(img_path: str) -> list:
 
     print(type(result))
 
+    ocr_unit = ''
+
     if type(result) is not dict:
         result = eval(result)
 
@@ -111,29 +113,87 @@ def Image_Excel(APP_ID, API_KEY, SECRET_KEY,image_path):
     return df
 
 if __name__ == '__main__':
-    img_path = "ordinary\o_test.png"
-    print(ocr_1(img_path))
-    final_dict = {}
-    ocr = ocr_1(img_path)
-    final_dict['title'] = ocr[0]
-    final_dict['unit'] = ocr[1]
+    form = input("请输入需要转换的表格类型（普通/跨页/多层级）：")
+    if form == "普通":
+        img_path = "ordinary\o_test.png"
+        final_dict = {}
+        ocr = ocr_1(img_path)
+        final_dict['title'] = ocr[0]
+        final_dict['unit'] = ocr[1]
 
-    image_path = "ordinary"
-    APP_ID = '56618439'
-    API_KEY = 'GLfSnI9WMwqPai81QqeetpMj'
-    SECRET_KEY = 'Co0yPRDbvlwf8nN7I6HtW0jNovIR5j4I'
-    df = Image_Excel(APP_ID, API_KEY, SECRET_KEY,image_path)
-    final_dict['header'] = list(df.head(0))
-    final_dict['key_index'] = list(df.loc[ : ,"项目名称"])
-    values = []
-    data1 = list(df.loc[0])[1:]
-    data2 = list(df.loc[1])[1:]
-    data3 = list(df.loc[2])[1:]
-    values.append(data1)
-    values.append(data2)
-    values.append(data3)
-    final_dict['values'] = values
-    print(final_dict)
+        image_path = "ordinary"
+        APP_ID = '56618439'
+        API_KEY = 'GLfSnI9WMwqPai81QqeetpMj'
+        SECRET_KEY = 'Co0yPRDbvlwf8nN7I6HtW0jNovIR5j4I'
+        df = Image_Excel(APP_ID, API_KEY, SECRET_KEY,image_path)
+        final_dict['header'] = list(df.head(0))
+        final_dict['key_index'] = list(df.iloc[ : ,0])
+        values = []
+        for i in range(df.shape[0]):
+            values.append(list(df.loc[i])[1:])
+        final_dict['values'] = values
+        print(final_dict)
+    elif form == "跨页":
+        img_path = "spread/page1/page1.png"
+        final_dict = {}
+        ocr = ocr_1(img_path)
+        final_dict['title'] = ocr[0]
+        final_dict['unit'] = ocr[1]
+
+        image_path_1 = "spread/page1"
+        image_path_2 = "spread/page2"
+        APP_ID = '56618439'
+        API_KEY = 'GLfSnI9WMwqPai81QqeetpMj'
+        SECRET_KEY = 'Co0yPRDbvlwf8nN7I6HtW0jNovIR5j4I'
+        df1 = Image_Excel(APP_ID, API_KEY, SECRET_KEY, image_path_1)
+        final_dict['header'] = list(df1.head(0))
+
+        df2 = Image_Excel(APP_ID, API_KEY, SECRET_KEY, image_path_2)
+
+        df1.loc[df1.shape[0]]= list(df2.head(0))
+        num = df1.shape[0]
+        for i in range(df2.shape[0]):
+            df1.loc[num+i] = list(df2.iloc[i,:])
+
+        final_dict['key_index'] = list(df1.iloc[:, 0])
+        print(df1)
+        values = []
+        for i in range(df1.shape[0]):
+            values.append(list(df1.loc[i])[1:])
+        final_dict['values'] = values
+        print(final_dict)
+
+    elif form == "多层级":
+        img_path = "multi_level\m_test.png"
+        final_dict = {}
+        ocr = ocr_1(img_path)
+        final_dict['title'] = ocr[0]
+        final_dict['unit'] = ocr[1]
+
+        image_path = "multi_level"
+        APP_ID = '56618439'
+        API_KEY = 'GLfSnI9WMwqPai81QqeetpMj'
+        SECRET_KEY = 'Co0yPRDbvlwf8nN7I6HtW0jNovIR5j4I'
+        df = Image_Excel(APP_ID, API_KEY, SECRET_KEY, image_path)
+        print(df)
+        row1 = list(df.head(0))
+        for i in range(len(row1)):
+            if 'Unnamed' in row1[i]:  # 识别是否为空
+                row1[i] = row1[i - 1]  # 实现如果这一行存在空的话,就向右填充
+            else:
+                pass  # 如果没有合并单元格就无需处理
+        df.columns = row1
+        row2 = list(df.iloc[0,:])
+        for i in range(len(row2)):
+            if pd.isna(row2[i]):
+                df.iloc[0,i] = row1[i]
+        final_dict['header'] = list(df.head(0))
+        final_dict['key_index'] = list(df.iloc[:, 0])
+        values = []
+        for i in range(df.shape[0]):
+            values.append(list(df.loc[i])[1:])
+        final_dict['values'] = values
+        print(final_dict)
 
 
 
