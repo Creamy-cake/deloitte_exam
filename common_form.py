@@ -111,14 +111,14 @@ def Image_Excel(APP_ID, API_KEY, SECRET_KEY,image_path):
     return df
 
 if __name__ == '__main__':
-    img_path = "D:\code\ocr\ordinary\o_test.png"
+    img_path = "ordinary\o_test.png"
     print(ocr_1(img_path))
     final_dict = {}
     ocr = ocr_1(img_path)
     final_dict['title'] = ocr[0]
     final_dict['unit'] = ocr[1]
 
-    image_path = "D:\\code\\ocr\\ordinary"
+    image_path = "ordinary"
     APP_ID = '56618439'
     API_KEY = 'GLfSnI9WMwqPai81QqeetpMj'
     SECRET_KEY = 'Co0yPRDbvlwf8nN7I6HtW0jNovIR5j4I'
