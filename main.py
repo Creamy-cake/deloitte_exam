@@ -97,6 +97,9 @@ class page():
         return [self.table_all_list()[i] for i in self.table_id() ]
 
     def getfirsttable(self):
+        if self.table_id() == []:
+            print('%d have no tables.'%self.page_id)
+            return None
         return self.table_all_list()[self.table_id()[0]]
 
     def getlasttable_id(self):
@@ -105,6 +108,8 @@ class page():
     def isspread(self):
         nextpage = page(self.page_id + 1)
         firsttable = nextpage.getfirsttable()
+        if firsttable == None:
+            return False
         for cell in firsttable['table_cells']:
             if cell['start_row'] == 0 and replace(cell['text']).isdigit():
                 return True
@@ -198,14 +203,14 @@ def biaoge(page_id):
                 lineslist = firstpage.table_all_list()[i]['lines']
 
                 for line in lineslist:
-                    text = line['text']
+                    text = line['text'].replace('\n','')
                     if istitle(text):
                         dic['title'] = text
                     elif isunit(text):
                         dic['unit'] = text
 
                 for cell in firstpage.table_all_list()[i + 1]['table_cells']:
-                    txt = cell['text'].replace('/n', '')
+                    txt = cell['text'].replace('\n', '')
                     if cell['start_row'] == 0:
                         header.append(txt)
                     elif cell['start_col'] == 0:
@@ -220,7 +225,4 @@ def biaoge(page_id):
 
 
 if __name__ == '__main__':
-    biaoge(25)
-
-
-
+    biaoge(33)
