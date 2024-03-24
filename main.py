@@ -10,7 +10,7 @@ keys = ['title','unit','header','key_index','values']
 titlemark = ['%d)'%i for i in range(10)]
 titlemark += ['%d.'%i for i in range(10)]
 titlemark += ['一、','二、','三、','四、','五、','六、','七、','八、','九、','十、']
-
+titlemark += ['一)','二)','三)','四)','五)','六)','七)','八)','九)','十)']
 
 unitmark = '单位'
 
